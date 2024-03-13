@@ -4,13 +4,13 @@
 #include <Wire.h>
 #include <NeoSWSerial.h>
 
-//#define automat 8
-//#define up 4
-//#define down 5
-//#define left 6
-//#define right 7
+// automat 8
+// up 4
+// down 5
+// cw 6
+// ccw 7
 
-float az=0.0,el=0.0,setAz=0.0,setEl=0.0,oldAz=0.0,oldEl=0.0,ssetAz=0.0,ssetEl=0.0;
+float az=0.0,el=0.0,setAz=0.0,setEl=0.0,oldAz=0.0,oldEl=0.0;
 String buffer;
 char crlfbuf[80];
 bool autom = false, setdisp = false;
@@ -63,8 +63,8 @@ void displayprint(float azimut, float elevace, bool set){
   lcd.print(String(elevace,1));
 }
 
-void rotgoto(float rotaz, float rotel){
-    char setAzStr[6]; //pi*o co?
+void rotgoto(float rotaz, float rotel){ //Send command with requested AZ EL to the rotator
+    char setAzStr[6]; 
     char setElStr[6];
     dtostrf(abs(rotaz),5,1,setAzStr);
     dtostrf(abs(rotel),5,1,setElStr);
@@ -147,7 +147,7 @@ void loop() {
       }
 
 
-    while(rotserial.available() > 0){ //Tady parsuješ data z ancáblu a printuješ je na displej 
+    while(rotserial.available() > 0){ //Parsing AZ EL data sent by the rotator.
       char rx = rotserial.read();
       buffer += rx;
 
