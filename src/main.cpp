@@ -13,7 +13,7 @@
 float az=0.0,el=0.0,setAz=0.0,setEl=0.0,oldAz=0.0,oldEl=0.0,ssetAz=0.0,ssetEl=0.0;
 String buffer;
 char crlfbuf[80];
-bool autom = false;
+bool autom = false, setdisp = false;
 
 LiquidCrystal_I2C lcd(0x27,2,1,0,4,5,6,7);
 NeoSWSerial rotserial(3,2);
@@ -118,7 +118,7 @@ void loop() {
     }
     
 
-    if(az != (setAz + az) || el != (setEl + el)){ // p*čo co?
+    if(az != (setAz + az) || el != (setEl + el)){ // wtf but it works, conditions for negative values must be added not to confuse the rotator
     az += setAz;
     el += setEl;
     oldAz = az;
@@ -126,6 +126,7 @@ void loop() {
     rotgoto(az,el);
     setAz=0.0,setEl=0.0;
     displayprint(az,el,true);
+    setdisp = true;  
     }
 
     else {
@@ -135,6 +136,15 @@ void loop() {
         rotserial.println("AZ EL");
       }
     }
+    static unsigned long disptimeout = 0;
+    if(millis() > disptimeout && setdisp){
+      disptimeout = millis() + 5000;
+      lcd.setCursor(8,0);
+      lcd.print("        ");
+      lcd.setCursor(8,1);
+      lcd.print("        ");
+      setdisp = false;
+      }
 
 
     while(rotserial.available() > 0){ //Tady parsuješ data z ancáblu a printuješ je na displej 
